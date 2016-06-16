@@ -17,7 +17,12 @@ int main()
 	
 	// creating the socket
 	int handle = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-	sockaddr_in socketAddress = nsfw::stoa("127.0.0.1:50000");
+	sockaddr_in socketAddress;
+	socketAddress.sin_family = AF_INET;
+	socketAddress.sin_addr.S_un.S_addr = INADDR_ANY;
+	socketAddress.sin_port = htons(0);
+
+
 
 	bind(handle, (sockaddr*)&socketAddress, sizeof(sockaddr_in));
 
@@ -26,27 +31,32 @@ int main()
 	
 	// preparing to send
 	sockaddr_in outAddress,inAddress;	// inaddress will be automatically populated w/ the address of whomever you get a message from
-	outAddress = nsfw::stoa("10.15.22.54:50000");
+	outAddress = nsfw::stoa("10.15.22.49:50000");
+	//outAddress = nsfw::stoa("127.0.0.1:50000");
 	//tyler 88
 	//esme 54
+	//jared 61
 	int in_len = sizeof(sockaddr_in);
-	char outBuffer[40] = "||||";
-	char inBuffer[40];
+	char outBuffer[256] = "ABC";
+	char inBuffer[256];
 
 	// sending
 
 	while (true)
 	{
-		sendto(handle, outBuffer, 40, 0, (sockaddr*)&outAddress, sizeof(sockaddr_in));
-		recvfrom(handle, inBuffer, 40, 0, (sockaddr*)&inAddress, &in_len);
+		int sent = sendto(handle, outBuffer, 256, 0, (sockaddr*)&outAddress, sizeof(sockaddr_in));
+		int recv = recvfrom(handle, inBuffer, 256, 0, (sockaddr*)&inAddress, &in_len);
+		std::cout << inBuffer << "\n";
 	}
+
+
 	
 	
-	
-	std::cout << inBuffer << "\n";
+
+	system("pause");
 
 	closesocket(handle);
 	nsfw::termNetworking();
-	system("pause");
+	
 
 }
